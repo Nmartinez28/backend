@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <form>
+        <input id="a" name="a" type="text">
+        <input id="b" name="b" type="text">
+        <input id="c" name="c" type="text">
+        <input type="button" value="Sumar" onclick="sumar()">
+    </form>
+</body>
+
+</html>
+
+<script>
+    function sumar() {
+        let a = document.getElementById("a")
+        let b = document.getElementById("b")
+        let c = document.getElementById("c")
+
+        fetch("/add", {
+            method: "post",
+            headers: {
+                'Content-Type': 'application/json', //MIME
+            },
+            body: JSON.stringify({ a: a.value, b: b.value })
+
+        }).then(res => res.json())
+            .then(res => {
+                c.value = res.result;
+            })
+
+    }
+</script>

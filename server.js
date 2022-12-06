@@ -24,7 +24,7 @@ app.post("/login", (req, res) => {
         } else {
             if (dataUsu !== null){
                 console.log(dataUsu);
-                return res.send({ url: "/listado-ordenes", estado: "ok" })
+                return res.send({ msg: "Usuario logueado", url: "/listado-ordenes", estado: "ok" })
             }
         }
         return res.send({ msg: "¡Error al loguearse!: Verifica que tu usuario o contraseña estén escritos correctamente", estado: "error" })
@@ -51,7 +51,7 @@ app.post("/listado-ordenes", (req, res) => {
         } else {
             if (lista !== null) {
                 console.log(lista);
-                return res.send({ msg: "¡Lista cargada exitosamente!", estado: "ok" })
+                return res.send({ msg: "¡Lista cargada exitosamente!", estado: "ok", data: lista })
             } else {
                 return res.send({ msg: "Sin listado de ordenes", estado: "error" })
             }
@@ -72,9 +72,66 @@ app.post("/registro-ordenes/guardar", (req, res) => {
     });    
 })
 
-mongoose.connect("mongodb+srv://rperez:facil123456@cluster0.3nhnv.mongodb.net/tienda?retryWrites=true&w=majority")
-    .then(res => console.log("Conectado a BD"))
-    .catch(err => console.log(err))
+app.post("/actualizar-ordenes/consultar", (req, res) => {
+    const {id} = req.body
+    console.log(id);
+    Listado_orden.find({_id:id}, (error, orden) => {
+        if (error) {
+           console.log(error);
+            return res.send({ msg: "¡Error en la consulta!", estado: "error" })
+        } else {
+            if (orden !== null) {
+                console.log(orden);
+                return res.send({ msg: "ok", estado: "ok", data: orden})
+            } else {
+                return res.send({ msg: "¡Producto no encontrado!", estado: "error" })
+            }
+        }
+    })
+})
+
+app.post("/actualizar-ordenes/actualizar", (req, res) => {
+    const { nombre, cédula, teléfono, fecha, tiempo, estado, largo, ancho, altura, peso, ciudad_recogida, dirección_recogida, ciudad_entrega, dirección_entrega } = req.body
+    Registrar_orden.updateOne({ cédula }
+        , {
+            $set:
+            {
+                nombre: nombre,
+                cédula: cédula,
+                teléfono: teléfono,
+                fecha: fecha,
+                tiempo: tiempo,
+                estado: estado,
+                largo:largo,
+                ancho: ancho,
+                altura: altura,
+                peso: peso,
+                ciudad_recogida: ciudad_recogida,
+                dirección_recogida: dirección_recogida,
+                ciudad_entrega: ciudad_entrega,
+                dirección_entrega: dirección_entrega,
+            }
+        })
+        .exec(
+            (error, res) => {
+                if (!error) {
+                    if (res.modifiedCount > 0)
+                        return res.send({ msg: "¡Producto actualizado!", estado: "ok", url:"/listado-ordenes" });
+                    return res.send({ msg: "¡Error!: Producto NO actualizado", estado: "error" });
+                }
+                return res.send({ msg: "¡Error al actualizar!", estado: "error" });
+            }
+        );
+})
+
+const DB = ""
+mongoose.connect(DB)
+.then (res => console.log ("Conectado a la base de datos"))
+.catch(err => console.log(err))
+
+mongoose.connection.on("open", _ => {
+    console.log("Se ha conectado a la base de datos", DB);
+})
 
 app.listen(8000, () => {
     console.log(`Server is running on port 8000.`);

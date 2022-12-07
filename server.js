@@ -9,7 +9,7 @@ app.use(bodyParser.json());
 app.use(cors())
 const Login = require("./src/modelos/logModelo");
 const Signup = require("./src/modelos/signModelo");
-const Listado_orden = requiere("./src/modelos/listModelo")
+const Listado_orden = require("./src/modelos/listModelo")
 const Registrar_orden = require("./src/modelos/regModelo");
 // const Actualizar_orden = require("./src/modelos/actModelo");
 
@@ -39,7 +39,7 @@ app.post("/signup", (req, res) => {
         if (error) {
             return res.send({ msg: "Error de registro", estado: "error" })
         }
-        return res.send({ msg: "¡Registro guardado exitosamente!", estado: "ok" })
+        return res.send({ msg: "¡Registro guardado exitosamente!", estado: "ok", url:"/Entrar" })
     })
 })
 
@@ -59,7 +59,7 @@ app.post("/listado-ordenes", (req, res) => {
     })
 })
 
-app.post("/registro-ordenes/guardar", (req, res) => {
+app.post("/registro-ordenes", (req, res) => {
     const data = req.body
     console.log(data);
     const orden = new Registrar_orden(data);
@@ -91,25 +91,25 @@ app.post("/actualizar-ordenes/consultar", (req, res) => {
 })
 
 app.post("/actualizar-ordenes/actualizar", (req, res) => {
-    const { nombre, cédula, teléfono, fecha, tiempo, estado, largo, ancho, altura, peso, ciudad_recogida, dirección_recogida, ciudad_entrega, dirección_entrega } = req.body
-    Registrar_orden.updateOne({ cédula }
+    const { name, id, tlf, fecha, hora, estado, largo, ancho, altura, peso, ciudad, dirección1, ciudad2, dirección2 } = req.body
+    Registrar_orden.updateOne({ id }
         , {
             $set:
             {
-                nombre: nombre,
-                cédula: cédula,
-                teléfono: teléfono,
+                name: name,
+                id: id,
+                tlf: tlf,
                 fecha: fecha,
-                tiempo: tiempo,
+                hora: hora,
                 estado: estado,
                 largo:largo,
                 ancho: ancho,
                 altura: altura,
                 peso: peso,
-                ciudad_recogida: ciudad_recogida,
-                dirección_recogida: dirección_recogida,
-                ciudad_entrega: ciudad_entrega,
-                dirección_entrega: dirección_entrega,
+                ciudad: ciudad,
+                dirección1: dirección1,
+                ciudad2: ciudad2,
+                dirección2: dirección2,
             }
         })
         .exec(
@@ -124,7 +124,7 @@ app.post("/actualizar-ordenes/actualizar", (req, res) => {
         );
 })
 
-const DB = ""
+const DB = "mongodb+srv://PruebaDB:omPZqMTF095qH8Bi@cluster0.yaoduaa.mongodb.net/?retryWrites=true&w=majority"
 mongoose.connect(DB)
 .then (res => console.log ("Conectado a la base de datos"))
 .catch(err => console.log(err))
